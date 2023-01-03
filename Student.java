@@ -1,22 +1,25 @@
 import java.util.ArrayList;
-import java.util.stream.Stream;
-import java.util.stream.IntStream;
 
 public class Student {
-    private String studentId;
-    private ArrayList<Integer> tokens;
+    private final String studentId;
+    private final ArrayList<Integer> tokens = new ArrayList<>();
     private int totalTokens;
+    private final ArrayList<Course> enrolledCourses = new ArrayList<>();
+    private final ArrayList<Course> randomlyEnrolledCourses = new ArrayList<>();
 
     public Student(String studentId) {
         this.studentId = studentId;
-        tokens = new ArrayList<>();
         totalTokens = 0;
     }
 
     public Student(String studentId, ArrayList<Integer> tokens) {
         this.studentId = studentId;
-        this.tokens = tokens;
+        this.tokens.addAll(tokens);
         totalTokens = tokens.stream().reduce(0, Integer::sum);
+    }
+
+    public String toString() {
+        return studentId + " " + tokens + " " + totalTokens + " ";
     }
 
     public String getStudentId() {
@@ -33,7 +36,8 @@ public class Student {
     }
 
     public void setTokens(ArrayList<Integer> tokens) {
-        this.tokens = tokens;
+        this.tokens.clear();
+        this.tokens.addAll(tokens);
         totalTokens = tokens.stream().reduce(0, Integer::sum);
     }
 
@@ -41,7 +45,25 @@ public class Student {
         return totalTokens;
     }
 
-    public String toString() {
-        return studentId + " " + tokens + " " + totalTokens;
+    public void enroll(Course course, boolean isRandom) {
+        if (isRandom){
+            randomlyEnrolledCourses.add(course);
+        } else {
+            enrolledCourses.add(course);
+        }
+    }
+
+    public ArrayList<Course> getEnrolledCourses() {
+        return enrolledCourses;
+    }
+
+    public int getTokenOfCourse(int order) {
+        return tokens.get(order);
+    }
+
+    public void isTokenDistributionValid(int totalTokens) {
+        if (this.totalTokens != totalTokens){
+            throw new IllegalArgumentException("Token distribution is not valid for student " + studentId);
+        }
     }
 }

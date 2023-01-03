@@ -1,9 +1,8 @@
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.stream.IntStream;
+import java.util.Comparator;
 import java.util.stream.Stream;
 
 public class Tatec
@@ -14,17 +13,17 @@ public class Tatec
     private static final String OUT_RAND_UNHAPPY = "unhappyOutRANDOM.txt";
     private static final String OUT_RAND_ADMISSION = "admissionOutRANDOM.txt";
 
-    private static ArrayList<Student> students = new ArrayList<>();
-    private static ArrayList<Course> courses = new ArrayList<>();
+    private static final ArrayList<Student> students = new ArrayList<>();
+    private static final ArrayList<Course> courses = new ArrayList<>();
 
     private static void parse(String courseFilePath, String studentIdFilePath, String tokenFilePath) {
         try (Stream<String> lines = Files.lines(Paths.get(courseFilePath))) {
+            var ref = new Object() {
+                int i = 0;
+            };
             lines.forEach(line -> {
-                String[] parts = line.split("\\s+");
-                String courseName = parts[0];
-                int capacity = Integer.parseInt(parts[1]);
-                Course course = new Course(courseName, capacity);
-                courses.add(course);
+                String[] tokens = line.split(", ");
+                courses.add(new Course(tokens[0], Integer.parseInt(tokens[1]), ref.i++));
             });
         } catch (IOException e) {
             e.printStackTrace();
@@ -57,9 +56,15 @@ public class Tatec
             students.get(i).setTokens(tokens.get(i));
         }
 
-        for (Student student : students) {
-            System.out.println(student.toString());
+        try{
+            students.stream().forEach(student -> student.isTokenDistributionValid(CORRECT_TOTAL_TOKEN_PER_STUDENT));
         }
+        catch (Exception e){
+            System.out.println(e.getMessage());
+            System.exit(0);
+        }
+
+        Course.setAllStudents(students);
     }
 
     public static void main(String args[])
@@ -86,7 +91,15 @@ public class Tatec
         }
 
         parse(courseFilePath, studentIdFilePath, tokenFilePath);
+        Course.setCoefficient(h);
 
+        courses.stream()
+                .sorted(Comparator.comparing(Course::getCapacity, Comparator.reverseOrder()))
+                .forEach(Course::registerStudents);
+
+        courses.stream()
+                .forEach(Course::registerStudentsRandomly);
+
+        Course.writeRegistration(OUT_TATEC_ADMISSION, OUT_RAND_ADMISSION);
     }
-
 }
