@@ -1,9 +1,11 @@
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 public class Student {
     private final String studentId;
     private final ArrayList<Integer> tokens = new ArrayList<>();
     private int totalTokens;
+    private static final ArrayList<Course> allCourses = new ArrayList<>();
     private final ArrayList<Course> enrolledCourses = new ArrayList<>();
     private final ArrayList<Course> randomlyEnrolledCourses = new ArrayList<>();
 
@@ -45,6 +47,11 @@ public class Student {
         return totalTokens;
     }
 
+    public static void setAllCourses(ArrayList<Course> allCourses) {
+        Student.allCourses.clear();
+        Student.allCourses.addAll(allCourses);
+    }
+
     public void enroll(Course course, boolean isRandom) {
         if (isRandom){
             randomlyEnrolledCourses.add(course);
@@ -65,5 +72,23 @@ public class Student {
         if (this.totalTokens != totalTokens){
             throw new IllegalArgumentException("Token distribution is not valid for student " + studentId);
         }
+    }
+
+    public double calculateUnhappiness(double coefficient, boolean isRandom) {
+        ArrayList<Course> targetList = isRandom ? randomlyEnrolledCourses : enrolledCourses;
+        double unhappiness = allCourses.stream()
+                .filter(c -> !targetList.contains(c))
+                .mapToDouble(c -> unhappinessFormula(coefficient, tokens.get(allCourses.indexOf(c))))
+                .sum();
+        if (targetList.isEmpty()){
+            unhappiness *= unhappiness;
+        }
+        return unhappiness;
+    }
+
+    private double unhappinessFormula(double coefficient, int token){
+        //if equals to infinity, return 100
+        double d = (-100/coefficient)*Math.log(1-token/100.0);
+        return Double.isInfinite(d) ? 100 : d;
     }
 }

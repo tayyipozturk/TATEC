@@ -1,4 +1,5 @@
 import java.io.File;
+import java.io.IOException;
 import java.util.*;
 import java.nio.file.Files;
 import java.util.stream.Collectors;
@@ -94,6 +95,7 @@ public class Course {
                 .forEach(student -> registerStudent(student, false));
 
         allStudents.stream()
+                .sorted(Comparator.comparing(student -> student.getTokenOfCourse(order), Comparator.reverseOrder()))
                 .skip(registeredStudents.size())
                 .filter(student -> student.getTokenOfCourse(order) == registeredStudents.get(registeredStudents.size() - 1).getTokenOfCourse(order))
                 .forEach(student -> registerStudent(student, true));
@@ -106,6 +108,12 @@ public class Course {
                 .filter(student -> student.getTokenOfCourse(order) > 0 && !randomlyRegisteredStudents.contains(student))
                 .limit(capacity)
                 .forEach(student -> registerStudent(student, true));
+    }
+
+    public static double calculateUnhappiness(boolean isRandom) {
+        return allStudents.stream()
+                .mapToDouble(student -> student.calculateUnhappiness(coefficient, isRandom))
+                .sum() / allStudents.size();
     }
 
     public static void writeRegistration(String tatecFile, String randomFile) {
@@ -125,6 +133,22 @@ public class Course {
             );
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    public static void writeUnhappiness(String tatecFile, String randomFile){
+        try {
+            Files.write(
+                    new File(tatecFile).toPath(),
+                    Stream.of(String.valueOf(calculateUnhappiness(false)))
+                            .collect(Collectors.toList()));
+
+            Files.write(
+                    new File(randomFile).toPath(),
+                    Stream.of(String.valueOf(calculateUnhappiness(true)))
+                            .collect(Collectors.toList()));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 }

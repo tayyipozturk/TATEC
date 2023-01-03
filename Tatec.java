@@ -64,6 +64,7 @@ public class Tatec
             System.exit(0);
         }
 
+        Student.setAllCourses(courses);
         Course.setAllStudents(students);
     }
 
@@ -100,6 +101,7 @@ public class Tatec
         courses.stream()
                 .forEach(Course::registerStudentsRandomly);
 
+        Course.writeUnhappiness(OUT_TATEC_UNHAPPY, OUT_RAND_UNHAPPY);
         Course.writeRegistration(OUT_TATEC_ADMISSION, OUT_RAND_ADMISSION);
     }
 }
