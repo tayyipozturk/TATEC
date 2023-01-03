@@ -68,6 +68,20 @@ public class Tatec
         Course.setAllStudents(students);
     }
 
+    public static void registerStudentsByToken(){
+        courses.stream()
+                .forEach(Course::registerStudents);
+        Course.writeRegistrationToFile(OUT_TATEC_ADMISSION, false);
+        Course.writeUnhappinessToFile(OUT_TATEC_UNHAPPY, false);
+    }
+
+    public static void registerStudentsRandomly(){
+        courses.stream()
+                .forEach(Course::registerStudentsRandomly);
+        Course.writeRegistrationToFile(OUT_RAND_ADMISSION, true);
+        Course.writeUnhappinessToFile(OUT_RAND_UNHAPPY, true);
+    }
+
     public static void main(String args[])
     {
         if(args.length < 4)
@@ -94,14 +108,7 @@ public class Tatec
         parse(courseFilePath, studentIdFilePath, tokenFilePath);
         Course.setCoefficient(h);
 
-        courses.stream()
-                .sorted(Comparator.comparing(Course::getCapacity, Comparator.reverseOrder()))
-                .forEach(Course::registerStudents);
-
-        courses.stream()
-                .forEach(Course::registerStudentsRandomly);
-
-        Course.writeUnhappiness(OUT_TATEC_UNHAPPY, OUT_RAND_UNHAPPY);
-        Course.writeRegistration(OUT_TATEC_ADMISSION, OUT_RAND_ADMISSION);
+        registerStudentsByToken();
+        registerStudentsRandomly();
     }
 }

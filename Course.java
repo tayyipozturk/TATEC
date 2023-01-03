@@ -2,6 +2,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.*;
 import java.nio.file.Files;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -44,6 +45,14 @@ public class Course {
         return capacity;
     }
 
+    public int getOrder() {
+        return order;
+    }
+
+    public double getCoefficient() {
+        return coefficient;
+    }
+
     public static void setAllStudents(ArrayList<Student> allStudents) {
         Course.allStudents.clear();
         Course.allStudents.addAll(allStudents);
@@ -71,20 +80,8 @@ public class Course {
         return randomlyRegisteredStudents;
     }
 
-    public int getNumStudents() {
-        return registeredStudents.size();
-    }
-
-    public int getOrder() {
-        return order;
-    }
-
     public static void setCoefficient(double coefficient) {
         Course.coefficient = coefficient;
-    }
-
-    public static double getCoefficient() {
-        return coefficient;
     }
 
     public void registerStudents() {
@@ -99,7 +96,6 @@ public class Course {
                 .skip(registeredStudents.size())
                 .filter(student -> student.getTokenOfCourse(order) == registeredStudents.get(registeredStudents.size() - 1).getTokenOfCourse(order))
                 .forEach(student -> registerStudent(student, true));
-
     }
 
     public void registerStudentsRandomly() {
@@ -116,19 +112,13 @@ public class Course {
                 .sum() / allStudents.size();
     }
 
-    public static void writeRegistration(String tatecFile, String randomFile) {
+    public static void writeRegistrationToFile(String filename, boolean isRandom) {
+        Function<Course, String> courseToString = isRandom ? Course::randomToString : Course::toString;
         try {
             Files.write(
-                    new File(tatecFile).toPath(),
+                    new File(filename).toPath(),
                     allCourses.stream()
-                            .flatMap(course -> Stream.of(course.toString()))
-                            .collect(Collectors.toList())
-            );
-
-            Files.write(
-                    new File(randomFile).toPath(),
-                    allCourses.stream()
-                            .flatMap(course -> Stream.of(course.randomToString()))
+                            .flatMap(course -> Stream.of(courseToString.apply(course)))
                             .collect(Collectors.toList())
             );
         } catch (Exception e) {
@@ -136,16 +126,11 @@ public class Course {
         }
     }
 
-    public static void writeUnhappiness(String tatecFile, String randomFile){
+    public static void writeUnhappinessToFile(String filename, boolean isRandom) {
         try {
             Files.write(
-                    new File(tatecFile).toPath(),
-                    Stream.of(String.valueOf(calculateUnhappiness(false)))
-                            .collect(Collectors.toList()));
-
-            Files.write(
-                    new File(randomFile).toPath(),
-                    Stream.of(String.valueOf(calculateUnhappiness(true)))
+                    new File(filename).toPath(),
+                    Stream.of(String.valueOf(calculateUnhappiness(isRandom)))
                             .collect(Collectors.toList()));
         } catch (IOException e) {
             throw new RuntimeException(e);

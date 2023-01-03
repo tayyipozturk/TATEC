@@ -28,23 +28,10 @@ public class Student {
         return studentId;
     }
 
-    public void addToken(int token) {
-        tokens.add(token);
-        totalTokens += token;
-    }
-
-    public ArrayList<Integer> getTokens() {
-        return tokens;
-    }
-
     public void setTokens(ArrayList<Integer> tokens) {
         this.tokens.clear();
         this.tokens.addAll(tokens);
         totalTokens = tokens.stream().reduce(0, Integer::sum);
-    }
-
-    public int getTotalTokens() {
-        return totalTokens;
     }
 
     public static void setAllCourses(ArrayList<Course> allCourses) {
@@ -77,7 +64,7 @@ public class Student {
     public double calculateUnhappiness(double coefficient, boolean isRandom) {
         ArrayList<Course> targetList = isRandom ? randomlyEnrolledCourses : enrolledCourses;
         double unhappiness = allCourses.stream()
-                .filter(c -> !targetList.contains(c))
+                .filter(c -> !targetList.contains(c) && tokens.get(c.getOrder()) != 0)
                 .mapToDouble(c -> unhappinessFormula(coefficient, tokens.get(allCourses.indexOf(c))))
                 .sum();
         if (targetList.isEmpty()){
@@ -87,7 +74,6 @@ public class Student {
     }
 
     private double unhappinessFormula(double coefficient, int token){
-        //if equals to infinity, return 100
         double d = (-100/coefficient)*Math.log(1-token/100.0);
         return Double.isInfinite(d) ? 100 : d;
     }
