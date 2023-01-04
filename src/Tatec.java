@@ -1,17 +1,18 @@
+package src;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.stream.Stream;
 
 public class Tatec
 {
     private static final int CORRECT_TOTAL_TOKEN_PER_STUDENT = 100;
-    private static final String OUT_TATEC_UNHAPPY = "unhappyOutTATEC.txt";
-    private static final String OUT_TATEC_ADMISSION = "admissionOutTATEC.txt";
-    private static final String OUT_RAND_UNHAPPY = "unhappyOutRANDOM.txt";
-    private static final String OUT_RAND_ADMISSION = "admissionOutRANDOM.txt";
+    private static final String OUT_TATEC_UNHAPPY = "io/output/unhappyOutTATEC.txt";
+    private static final String OUT_TATEC_ADMISSION = "io/output/admissionOutTATEC.txt";
+    private static final String OUT_RAND_UNHAPPY = "io/output/unhappyOutRANDOM.txt";
+    private static final String OUT_RAND_ADMISSION = "io/output/admissionOutRANDOM.txt";
 
     private static final ArrayList<Student> students = new ArrayList<>();
     private static final ArrayList<Course> courses = new ArrayList<>();
