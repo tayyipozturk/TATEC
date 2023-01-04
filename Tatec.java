@@ -22,7 +22,7 @@ public class Tatec
                 int i = 0;
             };
             lines.forEach(line -> {
-                String[] tokens = line.split(", ");
+                String[] tokens = line.split(",");
                 courses.add(new Course(tokens[0], Integer.parseInt(tokens[1]), ref.i++));
             });
         } catch (IOException e) {
