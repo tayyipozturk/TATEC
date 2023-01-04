@@ -30,11 +30,11 @@ public class Course {
     }
 
     public String toString() {
-        return courseName + ", " + registeredStudents.stream().map(Student::getStudentId).collect(Collectors.joining(", "));
+        return courseName + ", " + registeredStudents.stream().map(Student::getStudentId).collect(Collectors.joining(","));
     }
 
     public String randomToString() {
-        return courseName + ", " + randomlyRegisteredStudents.stream().map(Student::getStudentId).collect(Collectors.joining(", "));
+        return courseName + ", " + randomlyRegisteredStudents.stream().map(Student::getStudentId).collect(Collectors.joining(","));
     }
 
     public String getCourseName() {
@@ -95,7 +95,7 @@ public class Course {
                 .sorted(Comparator.comparing(student -> student.getTokenOfCourse(order), Comparator.reverseOrder()))
                 .skip(registeredStudents.size())
                 .filter(student -> student.getTokenOfCourse(order) == registeredStudents.get(registeredStudents.size() - 1).getTokenOfCourse(order))
-                .forEach(student -> registerStudent(student, true));
+                .forEach(student -> registerStudent(student, false));
     }
 
     public void registerStudentsRandomly() {
