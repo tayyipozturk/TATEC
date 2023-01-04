@@ -1,6 +1,6 @@
 # TATEC - Token Assignment Based Technical Elective Course Selection
 
-This is a simple application that registers students for technical elective courses based on their token distribution.
+This is a simple application that registers students for technical elective courses based on their token distribution written by using Java Stream API.
 
 ## Installation
 
