@@ -78,6 +78,12 @@ This is a simple application that registers students for technical elective cour
     
     #### Normally, each course should be filled up to its capacity. Nevertheless, if there are students who spent the same amount of token on a course with the last student enrolled to the course, they all will be enrolled to the course as well. For example, if the capacity of a course is 10 and the last student enrolled to the course spent 5 tokens on the course, the students who spent 5 tokens on the course will be enrolled to the course as well independent of the capacity of the course.
 
-* `unhappinessOutTATEC.txt` & `unhappinessOutRANDOM.txt` - A file that contains the average unhappiness of all students. The file should be in the following format:
+* `unhappinessOutTATEC.txt` & `unhappinessOutRANDOM.txt` - A file that contains the average unhappiness of all students and unhappiness of each student as separated lines. The file should be in the following format:
     
         averageUnhappiness
+        student1Unhappiness
+        student2Unhappiness
+        .
+        .
+        .
+        studentMUnhappiness
