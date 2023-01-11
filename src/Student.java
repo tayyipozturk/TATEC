@@ -1,5 +1,9 @@
 package src;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 
 public class Student {
@@ -9,6 +13,8 @@ public class Student {
     private static final ArrayList<Course> allCourses = new ArrayList<>();
     private final ArrayList<Course> enrolledCourses = new ArrayList<>();
     private final ArrayList<Course> randomlyEnrolledCourses = new ArrayList<>();
+    private double tatecUnhappiness;
+    private double randomUnhappiness;
 
     public Student(String studentId) {
         this.studentId = studentId;
@@ -56,6 +62,14 @@ public class Student {
         return tokens.get(order);
     }
 
+    public double getUnhappiness(boolean isRandom) {
+        if (isRandom){
+            return randomUnhappiness;
+        } else {
+            return tatecUnhappiness;
+        }
+    }
+
     public void isTokenDistributionValid(int totalTokens) {
         if (this.totalTokens != totalTokens){
             throw new IllegalArgumentException("Token distribution is not valid for student " + studentId);
@@ -71,11 +85,25 @@ public class Student {
         if (targetList.isEmpty()){
             unhappiness *= unhappiness;
         }
+        if (!isRandom){
+            this.tatecUnhappiness = unhappiness;
+        } else{
+            this.randomUnhappiness = unhappiness;
+        }
         return unhappiness;
     }
 
     private double unhappinessFormula(double coefficient, int token){
         double d = (-100/coefficient)*Math.log(1-token/100.0);
         return Double.isInfinite(d) ? 100 : d;
+    }
+
+    public void writeUnhappinessToFile(String filename, boolean isRandom){
+        String content = isRandom ? randomUnhappiness + "\n" : tatecUnhappiness + "\n";
+        try {
+            Files.write(new File(filename).toPath(), content.getBytes(), StandardOpenOption.APPEND);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

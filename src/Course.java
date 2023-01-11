@@ -2,8 +2,10 @@ package src;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
 import java.nio.file.Files;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -32,11 +34,11 @@ public class Course {
     }
 
     public String toString() {
-        return courseName + ", " + registeredStudents.stream().map(Student::getStudentId).collect(Collectors.joining(","));
+        return Stream.concat(Stream.of(courseName), registeredStudents.stream().map(Student::getStudentId)).collect(Collectors.joining(","));
     }
 
     public String randomToString() {
-        return courseName + ", " + randomlyRegisteredStudents.stream().map(Student::getStudentId).collect(Collectors.joining(","));
+        return Stream.concat(Stream.of(courseName), randomlyRegisteredStudents.stream().map(Student::getStudentId)).collect(Collectors.joining(","));
     }
 
     public String getCourseName() {
@@ -96,13 +98,15 @@ public class Course {
         allStudents.stream()
                 .sorted(Comparator.comparing(student -> student.getTokenOfCourse(order), Comparator.reverseOrder()))
                 .skip(registeredStudents.size())
+                .filter(student -> registeredStudents.size() > 0)
                 .filter(student -> student.getTokenOfCourse(order) == registeredStudents.get(registeredStudents.size() - 1).getTokenOfCourse(order))
                 .forEach(student -> registerStudent(student, false));
     }
 
     public void registerStudentsRandomly() {
-        Collections.shuffle(allStudents);
-        allStudents.stream()
+        ArrayList<Student> studentsCopy = new ArrayList<>(allStudents);
+        Collections.shuffle(studentsCopy);
+        studentsCopy.stream()
                 .filter(student -> student.getTokenOfCourse(order) > 0 && !randomlyRegisteredStudents.contains(student))
                 .limit(capacity)
                 .forEach(student -> registerStudent(student, true));
@@ -134,6 +138,8 @@ public class Course {
                     new File(filename).toPath(),
                     Stream.of(String.valueOf(calculateUnhappiness(isRandom)))
                             .collect(Collectors.toList()));
+            allStudents.stream().
+                    forEach(student -> student.writeUnhappinessToFile(filename, isRandom));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
